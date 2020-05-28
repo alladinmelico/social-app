@@ -4,7 +4,13 @@ const express = require('express')
 const app = express()
 
 const { getAllPosts, postOne } = require('./handlers/posts')
-const { signup, login } = require('./handlers/users')
+const {
+	signup,
+	login,
+	uploadImage,
+	addUserDetails,
+	getAuthenticatedUser,
+} = require('./handlers/users')
 
 const FBAuth = require('./util/fbAuth')
 
@@ -16,5 +22,8 @@ app.post('/post', FBAuth, postOne)
 let token, userId
 app.post('/signup', signup)
 app.post('/login', login)
+app.post('/user/image', FBAuth, uploadImage)
+app.post('/user', FBAuth, addUserDetails)
+app.get('/user', FBAuth, getAuthenticatedUser)
 
 exports.api = functions.region('asia-east2').https.onRequest(app)
