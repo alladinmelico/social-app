@@ -34,3 +34,31 @@ exports.postOne = (req, res) => {
 			console.error(err)
 		})
 }
+
+exports.getPost = (req, res) => {
+	let postData = {}
+	console.log(req.params)
+	db.doc(`/posts/${req.params.id}`)
+		.get()
+		.then((doc) => {
+			if (!doc.exists)
+				return res.status(400).json({ error: 'Post not found' })
+			postData = doc.data()
+			postData.postId = doc.id
+			return db
+				.collection('comments')
+				.where('postId', '==', req.params.id)
+				.get()
+		})
+		.then((data) => {
+			postData.comments = []
+			data.forEach((doc) => {
+				postData.comments.push(doc.data())
+			})
+			return res.json(postData)
+		})
+		.catch((err) => {
+			console.error(err)
+			return res.status(500).json({ error: err.code })
+		})
+}
